@@ -1,0 +1,159 @@
+import prgapp, picotran
+
+def ui_init(ui):
+    _translate = prgapp.QtCore.QCoreApplication.translate
+    
+    item = ui.listWidget.item(0)
+    item.setText(_translate("MainWindow", "Dip 0.0"))
+    widget = prgapp.QtWidgets.QWidget()
+    layout = prgapp.QtWidgets.QHBoxLayout()
+    layout.setContentsMargins(5, 5, 5, 5)
+
+    label = prgapp.QtWidgets.QLabel("")
+    ui.doubleSpinBox_dip = QtWidgets.QDoubleSpinBox()
+    
+    layout.addWidget(label)
+    layout.addWidget(ui.doubleSpinBox_dip)
+    widget.setLayout(layout)
+    item.setSizeHint(widget.sizeHint())
+    ui.listWidget.setItemWidget(item, widget)
+    
+    
+    item = ui.listWidget.item(1)
+    item.setText(_translate("MainWindow", "Undip 0.0"))
+
+    widget = prgapp.QtWidgets.QWidget()
+    layout = prgapp.QtWidgets.QHBoxLayout()
+    layout.setContentsMargins(5, 5, 5, 5)
+
+    label = prgapp.QtWidgets.QLabel("")
+    ui.doubleSpinBox_undip = QtWidgets.QDoubleSpinBox()
+
+    layout.addWidget(label)
+    layout.addWidget(ui.doubleSpinBox_undip)
+    widget.setLayout(layout)
+    item.setSizeHint(widget.sizeHint())
+    ui.listWidget.setItemWidget(item, widget)
+    
+    
+    
+    item = ui.listWidget.item(2) 
+    item.setText(_translate("MainWindow", "Rotate 0.0"))
+    
+    widget = prgapp.QtWidgets.QWidget()
+    layout = prgapp.QtWidgets.QHBoxLayout()
+    layout.setContentsMargins(5, 5, 5, 5)
+    
+    label = prgapp.QtWidgets.QLabel("")
+    ui.doubleSpinBox_rotate = QtWidgets.QDoubleSpinBox()
+    
+    layout.addWidget(label)
+    layout.addWidget(ui.doubleSpinBox_rotate)
+    widget.setLayout(layout)
+    item.setSizeHint(widget.sizeHint())
+    ui.listWidget.setItemWidget(item, widget)
+    
+    
+    
+    item = ui.listWidget.item(3)
+    item.setText(_translate("MainWindow", "Wait 0.0"))
+
+    widget = prgapp.QtWidgets.QWidget()
+    layout = prgapp.QtWidgets.QHBoxLayout()
+    layout.setContentsMargins(5, 5, 5, 5)
+
+    label = prgapp.QtWidgets.QLabel("")
+    ui.doubleSpinBox_wait = QtWidgets.QDoubleSpinBox()
+
+    layout.addWidget(label)
+    layout.addWidget(ui.doubleSpinBox_wait)
+    widget.setLayout(layout)
+    item.setSizeHint(widget.sizeHint())
+    ui.listWidget.setItemWidget(item, widget)
+
+
+    ui.pushButton.clicked.connect(lambda:ui.listWidget_2.clear())
+    ui.pushButton_2.clicked.connect(lambda:ui.listWidget_2.takeItem(ui.listWidget_2.currentRow()))
+
+
+    ui.doubleSpinBox_dip.valueChanged.connect(lambda:ui.listWidget.item(0).setText(f"Dip {ui.doubleSpinBox_dip.value()}"))
+    ui.doubleSpinBox_undip.valueChanged.connect(lambda:ui.listWidget.item(1).setText(f"Undip {ui.doubleSpinBox_undip.value()}"))
+    ui.doubleSpinBox_rotate.valueChanged.connect(lambda:ui.listWidget.item(2).setText(f"Rotate {ui.doubleSpinBox_rotate.value()}"))
+    ui.doubleSpinBox_wait.valueChanged.connect(lambda:ui.listWidget.item(3).setText(f"Wait {ui.doubleSpinBox_wait.value()}"))
+
+def programmer():
+    print(f"{[ui.listWidget_2.item(i).text() for i in range(ui.listWidget_2.count())]} count:{ui.listWidget_2.count()}")
+    with open(f"p{ui.spinBox.value()}.py", 'w') as pf:
+        pf.write("""import time, busio, digitalio, board
+from lcd.lcd import LCD
+from lcd.i2c_pcf8574_interface import I2CPCF8574Interface
+import KeyPad
+import os
+""")
+        pf.write("def main(step_pin_dip, dir_pin_dip, step_pin_rot, dir_pin_rot):\n")
+        for i in [ui.listWidget_2.item(i).text() for i in range(ui.listWidget_2.count())]:
+            cmd_par = i.split(" ")
+            step_delay = (((float(cmd_par[1]))*.00158245)+.000341841)
+            print(step_delay)
+            if step_delay < .001:
+                step_delay = 0.001  # Delay between steps in seconds (adjust for speed)
+            microMode = 8
+            # full rotation multiplied by the microstep divider
+            step_count_dip=600*microMode//8
+            step_count_rot = 200 * microMode//1
+            if cmd_par[0] == "Undip":
+                print("dip")
+                pf.write(
+                    f"""
+    dir_pin_dip.value = True
+    for _ in range({step_count_dip}):
+        step_pin_dip.value = True
+        time.sleep({step_delay})
+        step_pin_dip.value = False
+""")
+            elif cmd_par[0] == "Dip":
+                print("undip")
+                pf.write(
+                f"""
+    dir_pin_dip.value = False
+    for _ in range({step_count_dip}):
+        step_pin_dip.value = True
+        time.sleep({step_delay})
+        step_pin_dip.value = False
+""")
+            elif cmd_par[0] == "Rotate":
+                print("rotate")
+                pf.write(
+                f"""
+    for _ in range({int(cmd_par[1][:cmd_par[1].find('.')])}):
+        dir_pin_dip.value = False
+        for _ in range({step_count_dip}):
+            step_pin_rot.value = True
+            time.sleep(0.001)
+            step_pin_rot.value = False
+""")
+            elif cmd_par[0] == "Wait":
+                print("wait")
+                pf.write(f"\n    time.sleep({float(cmd_par[1])})\n")
+    picotran.transfer()
+
+if __name__ == "__main__":
+    import sys
+    from PyQt6 import QtCore, QtGui, QtWidgets
+    from PyQt6.QtWidgets import (
+        QApplication, QWidget, QListWidget, QListWidgetItem,
+        QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QAbstractItemView
+    )
+    from PyQt6.QtCore import Qt, QMimeData, QByteArray, QDataStream, QIODevice
+    import sys
+
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = prgapp.Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    ui_init(ui)
+    MainWindow.show()
+
+    ui.commandLinkButton.clicked.connect(lambda:programmer())
+
+    sys.exit(app.exec())
