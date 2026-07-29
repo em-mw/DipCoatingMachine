@@ -201,14 +201,24 @@ def A_menu():
         x = KeyPad.getkey()
         if x != -999: # A key has been pressed!
             if x == 15:
-                break
+                if not file_exists(f"p{dip_program}.py"):
+                    print("here")
+                    lcd.set_cursor_pos(1,0)
+                    lcd.print("pgm not found :(")
+                    time.sleep(.8)
+                    lcd.set_cursor_pos(1,0)
+                    lcd.print("                ")
+                    lcd.set_cursor_pos(1,0)
+                    continue
+                else:
+                    break
             elif x == 14 and cursor>0:
                 lcd.set_cursor_pos(1, cursor-1)
                 lcd.print(" ")
                 cursor-=1
                 lcd.set_cursor_pos(1, cursor)
                 dip_program=dip_program[:len(dip_program)-1]
-            elif x == 10 or x == 12 or x == 13:
+            elif x == 10 or x == 11 or x == 12 or x == 13:
                 raise Quit(x)
             elif x != 14:
                 lcd.set_cursor_pos(1, cursor)
@@ -217,6 +227,7 @@ def A_menu():
                 cursor+=1
             print(f"{dip_program} {cursor}")
             #speed+=characters[x-1]
+    eval(f"import p{dip_program}")
     eval(f"p{dip_program}.main(step_pin_dip, dir_pin_dip, step_pin_rot, dir_pin_rot)")
         
 def B_menu():
@@ -248,7 +259,7 @@ def B_menu():
                 cursor-=1
                 lcd.set_cursor_pos(1, cursor)
                 dip_time=dip_time[:len(dip_time)-1]
-            elif x == 10 or x == 12 or x == 13:
+            elif x == 10 or x == 11 or x == 12 or x == 13:
                 raise Quit(x)
             elif x != 14:
                 lcd.set_cursor_pos(1, cursor)
@@ -284,7 +295,7 @@ def B_menu():
                 cursor-=1
                 lcd.set_cursor_pos(1, cursor)
                 rot_inter=rot_inter[:len(dip_time)-1]
-            elif x == 10 or x == 12 or x == 13:
+            elif x == 10 or x == 11 or x == 12 or x == 13:
                 raise Quit(x)
             elif x != 14:
                 lcd.set_cursor_pos(1, cursor)
@@ -373,22 +384,38 @@ def C_menu():
     time.sleep(.3)
     lcd. set_cursor_pos(1,14)
     lcd.write(3)
+    x = KeyPad.getkey()
+    if x == 10 or x == 11 or x == 12 or x == 13:
+                raise Quit(x)
     time.sleep(.3)
     lcd. set_cursor_pos(1,14)
     lcd.write(4)
+    x = KeyPad.getkey()
+    if x == 10 or x == 11 or x == 12 or x == 13:
+                raise Quit(x)
     time.sleep(.3)
     lcd. set_cursor_pos(1,14)
     lcd.write(3)
+    x = KeyPad.getkey()
+    if x == 10 or x == 11 or x == 12 or x == 13:
+                raise Quit(x)
     time.sleep(.1)
     lcd. set_cursor_pos(1,14)
     time.sleep(.2)
     lcd. set_cursor_pos(1,14)
     lcd.write(4)
+    x = KeyPad.getkey()
+    if x == 10 or x == 11 or x == 12 or x == 13:
+                raise Quit(x)
     time.sleep(.3)
     lcd. set_cursor_pos(1,14)
     lcd.write(3)
+    x = KeyPad.getkey()
+    if x == 10 or x == 11 or x == 12 or x == 13:
+                raise Quit(x)
     lcd.close()
-    supervisor.reload()
+    return 0
+    #supervisor.reload()
 
 def D_menu():
     lcd.clear()
@@ -407,18 +434,12 @@ while True:
     except Quit as e:
         lcd.clear()
         lcd.home()
-        if e.value == 10:
-            print("[A]   Selected")
-            A_menu()
-        elif e.value == 11:
-            print("[B]   Selected")
-            B_menu()
-        elif e.value == 12:
-            print("[C]   Selected")
-            C_menu()
-        elif e.value == 13:
-            print("[D]   Selected")
-            D_menu()
+        if e.value == 10 or e.value == 11 or e.value == 12 or e.value == 13:
+            lcd.clear()
+            lcd.set_cursor_pos(0,0)
+            lcd.print("Going Back To")
+            lcd.set_cursor_pos(1,0)
+            lcd.print("Menu")
         time.sleep(.5)
     '''    
     except Exception as e:
@@ -428,7 +449,7 @@ while True:
         lcd.print("error occured,\nrestarting...")
         time.sleep(1)
 '''    
-#B_menu()
 lcd.close()
+
 
 
