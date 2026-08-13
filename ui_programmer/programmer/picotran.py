@@ -25,7 +25,7 @@ def transfer():
         for file in os.listdir(os.getcwd()):
             print(os.listdir(os.getcwd()))
             print(f"{file.find('p')} {file[-3:]}")
-            if file.find('p') == 0 and file[-3:]==".py":
+            if file.find('p') == 0 and file[-3:]==".py":  #make sure to add number recognition to this
                 try: int(file[1])
                 except:pass
                 else:

@@ -13,6 +13,8 @@ def file_exists(filename):
     return filename in os.listdir()
 
 # Example:
+
+# make this work automatically with any file that it notices
 if file_exists("p0.py"):import p0
 if file_exists("p1.py"):import p1
 if file_exists("p2.py"):import p2
@@ -179,7 +181,7 @@ class Quit(Exception):
     """Custom Class to handle Quiting"""
     def __init__(self, value):
         self.value = value
-def A_menu():
+def A_menu(): #Preprogrammed Menu
     pass
     lcd.clear()
     lcd.set_cursor_pos(0,0)
@@ -227,10 +229,16 @@ def A_menu():
                 cursor+=1
             print(f"{dip_program} {cursor}")
             #speed+=characters[x-1]
-    eval(f"import p{dip_program}")
+    eval(f"import p{dip_program}") #This may fix the problem mentioned in the comments of the import (do risk assessment)
+    lcd.clear()
+    lcd.set_cursor_pos(0,0)
+    lcd.print(f"Running {dip_program}")
+    lcd.set_cursor_pos(1,0)
+    lcd.print("hold \"*\" to stop")
+    
     eval(f"p{dip_program}.main(step_pin_dip, dir_pin_dip, step_pin_rot, dir_pin_rot)")
         
-def B_menu():
+def B_menu(): #Manual Programming Menu
     lcd.clear()
     lcd.set_cursor_pos(0,0)
     lcd.print("Custom")
