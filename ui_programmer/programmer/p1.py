@@ -5,17 +5,11 @@ import KeyPad
 import os
 def main(step_pin_dip, dir_pin_dip, step_pin_rot, dir_pin_rot):
     while True:
-        for _ in range(0):
-            dir_pin_dip.value = False
-            for _ in range(600):
-                step_pin_rot.value = True
-                time.sleep(0.001)
-                step_pin_rot.value = False
-
-        time.sleep(0.0)
-
-        dir_pin_dip.value = False
+        dir_pin_dip.value = True
         for _ in range(600):
             step_pin_dip.value = True
-            time.sleep(0.1)
+            time.sleep(0.0022727272727272726)
             step_pin_dip.value = False
+
+        if KeyPad.getKey() == 14:
+            exit()

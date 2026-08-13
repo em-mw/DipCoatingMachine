@@ -4,13 +4,15 @@ def ui_init(ui):
     _translate = prgapp.QtCore.QCoreApplication.translate
     
     item = ui.listWidget.item(0)
-    item.setText(_translate("MainWindow", "Dip 0.0 (Speed)"))
+    item.setText(_translate("MainWindow", "Dip 10.0 (Speed)"))
     widget = prgapp.QtWidgets.QWidget()
     layout = prgapp.QtWidgets.QHBoxLayout()
     layout.setContentsMargins(5, 5, 5, 5)
 
     label = prgapp.QtWidgets.QLabel("")
     ui.doubleSpinBox_dip = QtWidgets.QDoubleSpinBox()
+    
+    ui.doubleSpinBox_dip.setValue(10)
     
     layout.addWidget(label)
     layout.addWidget(ui.doubleSpinBox_dip)
@@ -20,7 +22,7 @@ def ui_init(ui):
     
     
     item = ui.listWidget.item(1)
-    item.setText(_translate("MainWindow", "Undip 0.0 (Speed)"))
+    item.setText(_translate("MainWindow", "Undip 10.0 (Speed)"))
 
     widget = prgapp.QtWidgets.QWidget()
     layout = prgapp.QtWidgets.QHBoxLayout()
@@ -28,6 +30,8 @@ def ui_init(ui):
 
     label = prgapp.QtWidgets.QLabel("")
     ui.doubleSpinBox_undip = QtWidgets.QDoubleSpinBox()
+
+    ui.doubleSpinBox_undip.setValue(10)
 
     layout.addWidget(label)
     layout.addWidget(ui.doubleSpinBox_undip)
@@ -46,6 +50,8 @@ def ui_init(ui):
     
     label = prgapp.QtWidgets.QLabel("")
     ui.doubleSpinBox_rotate = QtWidgets.QDoubleSpinBox()
+
+    ui.doubleSpinBox_rotate.setValue(0)
     
     layout.addWidget(label)
     layout.addWidget(ui.doubleSpinBox_rotate)
@@ -56,7 +62,7 @@ def ui_init(ui):
     
     
     item = ui.listWidget.item(3)
-    item.setText(_translate("MainWindow", "Wait 0.0 (Seconds)"))
+    item.setText(_translate("MainWindow", "Wait 1.0 (Seconds)"))
 
     widget = prgapp.QtWidgets.QWidget()
     layout = prgapp.QtWidgets.QHBoxLayout()
@@ -64,6 +70,8 @@ def ui_init(ui):
 
     label = prgapp.QtWidgets.QLabel("")
     ui.doubleSpinBox_wait = QtWidgets.QDoubleSpinBox()
+
+    ui.doubleSpinBox_wait.setValue(1)
 
     layout.addWidget(label)
     layout.addWidget(ui.doubleSpinBox_wait)
@@ -95,8 +103,9 @@ import os
         for i in [ui.listWidget_2.item(i).text() for i in range(ui.listWidget_2.count())]:
             cmd_par = i.split(" ")
             #step_delay = (((float(cmd_par[1]))*.00158245)+.000341841)
-            step_delay = 1/10*(float(cmd_par[1])+1)
+            step_delay = 1/(40*(float(cmd_par[1])+1))
             print(step_delay)
+            print(float(cmd_par[1]))
             if step_delay < .001:
                 step_delay = 0.001  # Delay between steps in seconds (adjust for speed)
             microMode = 8

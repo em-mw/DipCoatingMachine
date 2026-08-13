@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>852</width>
+    <width>901</width>
     <height>585</height>
    </rect>
   </property>
@@ -210,6 +210,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -217,7 +220,13 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Will This Program Be Looping?</string>
+         <string>This Program Will Loop (Editable in The Future)</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -246,7 +255,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>852</width>
+     <width>901</width>
      <height>24</height>
     </rect>
    </property>
