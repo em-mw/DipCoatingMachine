@@ -148,7 +148,7 @@ def menu_select():
     lcd.print("  Select Mode:")
     lcd.set_cursor_pos(1,0)
     lcd.print("Hold A,B,C, or D")
-    while True:   
+    while True:
         if KeyPad.getkey() == 10:
             A_menu()
             lcd.clear()
@@ -200,8 +200,9 @@ def A_menu(): #Preprogrammed Menu
     t=True
     while True:
         t=not t
-        x = KeyPad.getkey()
+        x = KeyPad.getkey()       
         if x != -999: # A key has been pressed!
+            print(x)
             if x == 15:
                 if not file_exists(f"p{dip_program}.py"):
                     print("here")
@@ -223,13 +224,20 @@ def A_menu(): #Preprogrammed Menu
             elif x == 10 or x == 11 or x == 12 or x == 13:
                 raise Quit(x)
             elif x != 14:
+                if cursor > 15:
+                    lcd.set_cursor_pos(1,0)
+                    lcd.print("                ")
+                    lcd.set_cursor_pos(1,0)
+                    cursor=0
+                    dip_program=""
+                    continue
                 lcd.set_cursor_pos(1, cursor)
                 dip_program+=characters[x-1]
                 lcd.print(characters[x-1])
                 cursor+=1
-            print(f"{dip_program} {cursor}")
+            print(f"{dip_program} {cursor} yes")
             #speed+=characters[x-1]
-    eval(f"import p{dip_program}") #This may fix the problem mentioned in the comments of the import (do risk assessment)
+    #eval(f"import p{dip_program}") #This may fix the problem mentioned in the comments of the import (do risk assessment)
     lcd.clear()
     lcd.set_cursor_pos(0,0)
     lcd.print(f"Running {dip_program}")
@@ -237,6 +245,12 @@ def A_menu(): #Preprogrammed Menu
     lcd.print("hold \"*\" to stop")
     
     eval(f"p{dip_program}.main(step_pin_dip, dir_pin_dip, step_pin_rot, dir_pin_rot)")
+    
+    lcd.clear()
+    lcd.set_cursor_pos(0,0)
+    lcd.print("stopping...")
+    time.sleep(.7)
+                
         
 def B_menu(): #Manual Programming Menu
     lcd.clear()
@@ -270,6 +284,13 @@ def B_menu(): #Manual Programming Menu
             elif x == 10 or x == 11 or x == 12 or x == 13:
                 raise Quit(x)
             elif x != 14:
+                if cursor > 15:
+                    lcd.set_cursor_pos(1,0)
+                    lcd.print("                ")
+                    lcd.set_cursor_pos(1,0)
+                    cursor=0
+                    dip_time=""
+                    continue
                 lcd.set_cursor_pos(1, cursor)
                 dip_time+=characters[x-1]
                 lcd.print(characters[x-1])
@@ -284,8 +305,10 @@ def B_menu(): #Manual Programming Menu
                 lcd.write(0b1)
     dip_time=int(dip_time)            
 
+    lcd.set_cursor_pos(1,0)
+    lcd.print("                ")
     lcd.set_cursor_pos(0,0)
-    lcd.print("Dips Per Rot")
+    lcd.print("Rots Per Dip")
     lcd.write(2)
     lcd.set_cursor_pos(1,0)
     rot_inter=""
@@ -302,10 +325,17 @@ def B_menu(): #Manual Programming Menu
                 lcd.print(" ")
                 cursor-=1
                 lcd.set_cursor_pos(1, cursor)
-                rot_inter=rot_inter[:len(dip_time)-1]
+                rot_inter=rot_inter[:len(str(dip_time))-1]
             elif x == 10 or x == 11 or x == 12 or x == 13:
                 raise Quit(x)
             elif x != 14:
+                if cursor > 15:
+                    lcd.set_cursor_pos(1,0)
+                    lcd.print("                ")
+                    lcd.set_cursor_pos(1,0)
+                    cursor=0
+                    rot_inter=""
+                    continue
                 lcd.set_cursor_pos(1, cursor)
                 rot_inter+=characters[x-1]
                 lcd.print(characters[x-1])
@@ -328,6 +358,7 @@ def B_menu(): #Manual Programming Menu
     # Motor step settings
     #dip_time=1
     step_delay = (((dip_time)*.00158245)+.000341841)
+    step_delay = 1/(40*(float(dip_time)+1))
     print(step_delay)
     if step_delay < .001:
         step_delay = 0.001  # Delay between steps in seconds (adjust for speed)
@@ -341,40 +372,36 @@ def B_menu(): #Manual Programming Menu
     lcd.clear()
     lcd.home()
     lcd.print("Running For:  B")
-    rot_counter = 1
-    while KeyPad.getkey() != 14:      
-        for _ in range(step_count_dip):
-            step_pin_dip.value = True
-            time.sleep(step_delay)
-            step_pin_dip.value = False
-            #time.sleep(.005)
-
-        # Optional direction change after each full rotation
-        dir_pin_dip.value = not dir_pin_dip.value
-        dir_pin_rot.value=not dir_pin_rot.value
-        #time.sleep(1)  # Wait 1 second before changing direction
-        
+    lcd.set_cursor_pos(1,0)
+    lcd.print("hold \"*\" to stop")
+    #rot_counter = 1
+    x=KeyPad.getkey()
+    while x != 14:      
+        dir_pin_dip.value = True
         for _ in range(step_count_dip):
             step_pin_dip.value = True
             time.sleep(step_delay)
             step_pin_dip.value = False
             #time.sleep(.005)
             
-       
-        if rot_counter==rot_inter:
-            rot_counter=0
+        for i in range(rot_inter):
+            print(i, list(range(rot_inter)))
             for _ in range(step_count_rot):
-                step_pin_rot.value=True
-                time.sleep(step_delay)
-                step_pin_rot.value=False
-        
-        dir_pin_dip.value = not dir_pin_dip.value
-        dir_pin_rot.value=not dir_pin_rot.value
-        rot_counter+=1
+                step_pin_rot.value = True
+                time.sleep(0.001)
+                step_pin_rot.value = False
+                    
+        dir_pin_dip.value=False
+        for _ in range(step_count_dip):
+            step_pin_dip.value = True
+            time.sleep(step_delay)
+            step_pin_dip.value = False
+        x=KeyPad.getkey()        
     lcd.clear()
     lcd.set_cursor_pos(0,0)
     lcd.print("Stopping...")
     time.sleep(.5)
+    
     
 
 def C_menu():
