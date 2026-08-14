@@ -98,18 +98,8 @@ Dip Coating Machine Programmer
 \"\"\"
 
 import time, busio, digitalio, board
-from lcd.lcd import LCD
-from lcd.i2c_pcf8574_interface import I2CPCF8574Interface
 import KeyPad
-import time, os
-
-#Display Functionality
-lcd_columns = 16
-lcd_rows = 2
-lcd_address = 0x27
-i2c = busio.I2C(scl=board.GP1, sda=board.GP0)
-lcd = LCD(I2CPCF8574Interface(i2c, 0x27), num_rows=2, num_cols=16)
-
+import os
 
 """)
         pf.write("def main(step_pin_dip, dir_pin_dip, step_pin_rot, dir_pin_rot):\n")
@@ -163,11 +153,6 @@ lcd = LCD(I2CPCF8574Interface(i2c, 0x27), num_rows=2, num_cols=16)
             
             pf.write("""
         if KeyPad.getkey() == 14:
-            for _ in range(3):
-                lcd.clear()
-                lcd.set_cursor_pos(0,0)
-                lcd.print("stopping...")
-                time.sleep(.3)
             break
 """)
     picotran.transfer()

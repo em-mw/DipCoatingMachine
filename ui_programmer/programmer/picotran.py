@@ -31,6 +31,7 @@ def transfer():
                 else:
                     shutil.copy(file, mountpoint)
                     print(file)
+                    os.remove(file)
     else:
         print("Pico not found.")
     print(f"file")
