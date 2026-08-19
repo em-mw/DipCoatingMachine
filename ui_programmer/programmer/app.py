@@ -115,7 +115,7 @@ import os
             microMode = 8
             # full rotation multiplied by the microstep divider
             step_count_dip=600*microMode//8
-            step_count_rot = 200 * microMode//1
+            step_count_rot = 200 * microMode//4
             if cmd_par[0] == "Undip":
                 print("dip")
                 pf.write(
@@ -142,7 +142,7 @@ import os
                 f"""
         for _ in range({int(cmd_par[1][:cmd_par[1].find('.')])}):
             dir_pin_dip.value = False
-            for _ in range({step_count_dip}):
+            for _ in range({step_count_rot}):
                 step_pin_rot.value = True
                 time.sleep(0.001)
                 step_pin_rot.value = False

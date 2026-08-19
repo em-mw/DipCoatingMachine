@@ -21,7 +21,7 @@ def main(step_pin_dip, dir_pin_dip, step_pin_rot, dir_pin_rot):
 
         for _ in range(0):
             dir_pin_dip.value = False
-            for _ in range(600):
+            for _ in range(200):
                 step_pin_rot.value = True
                 time.sleep(0.001)
                 step_pin_rot.value = False
